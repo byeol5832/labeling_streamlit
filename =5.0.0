@@ -1,7 +1,0 @@
-Collecting plotly
-  Using cached plotly-5.18.0-py3-none-any.whl.metadata (7.0 kB)
-Requirement already satisfied: tenacity>=6.2.0 in /home/armstrong/.local/lib/python3.8/site-packages (from plotly) (8.2.3)
-Requirement already satisfied: packaging in /home/armstrong/anaconda3/envs/streamlit_2/lib/python3.8/site-packages (from plotly) (23.2)
-Using cached plotly-5.18.0-py3-none-any.whl (15.6 MB)
-Installing collected packages: plotly
-Successfully installed plotly-5.18.0

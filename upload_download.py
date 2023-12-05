@@ -39,7 +39,7 @@ def select_folder(folder_path='.'):
     return folder_path 
 
 def create_json(img_path, model_path, result_path, json_path):
-    os.system('python3 YOLOX/tools/create_json.py ' + \
+    os.system('python3 create_json.py ' + \
                     '--path ' + img_path + ' ' + \
                     '--save_result ' + \
                     '--exp_file YOLOX/exps/default/yolox_s ' + \
@@ -83,9 +83,10 @@ def save_image(selected_folder_path, save_folder, img):
     next_image()
 
 def move_images(json_path, good_path, img_path, new_path):
-    os.system('python3 YOLOX/tools/find_missing_img.py ' + \
+    os.system('python3 find_missing_img.py ' + \
             '--json_file_path ' + json_path + ' ' + \
             '--good_path ' + good_path)
+    st.write('Saved train_filtered.json & val_filtered.json to', json_path)
     
     good_images = os.listdir(good_path)
     for i in good_images: 
@@ -191,19 +192,20 @@ if selected_folder_path:
         bt = False
         st.write("Enter the name of each save folder")
         for i, n in enumerate(button_names):
-            query_session = get_data(i, 'folder_names')
+            dir_name = st.text_input('Name of folder # ' + n,
+                                label_visibility=st.session_state.visibility,
+                                disabled=st.session_state.disabled)
+            
+            if dir_name:
+                query_session = get_data(i, 'folder_names')
 
-            if selected_folder_path and not query_session: 
-                dir_name = st.text_input('Name of folder # ' + n,
-                                    label_visibility=st.session_state.visibility,
-                                    disabled=st.session_state.disabled)
+                if not query_session: 
+                    add_data(dir_name, 'folder_names')
+                    os.makedirs(os.path.join(selected_folder_path, dir_name), exist_ok=True)
+
+                with st.sidebar:
+                    bt = st.button(dir_name, on_click=save_image, args=([selected_folder_path, dir_name, img]), disabled=st.session_state.disabled)
                 
-                os.makedirs(os.path.join(selected_folder_path, dir_name), exist_ok=True)
-                
-                if dir_name:
-                    with st.sidebar:
-                        bt = st.button(dir_name, on_click=save_image, args=([selected_folder_path, dir_name, img]), disabled=st.session_state.disabled)
-                        add_data(dir_name, 'folder_names')
         
         if bt: 
             show_image(result_path, img)    
@@ -221,17 +223,17 @@ if selected_folder_path:
             good_path = os.path.join(selected_folder_path, good_folder) 
             st.write('good_path: ', good_path)
 
-        new_folder = st.text_input('Name of new images folder')
-        if len(new_folder) == 0: 
-            new_path = os.path.join(selected_folder_path, 'new')
-            os.makedirs(new_path, exist_ok=True) 
-            st.write('Default new_path: ', new_path)
-        else: 
-            new_path = os.path.join(selected_folder_path, new_folder)
-            os.makedirs(new_path, exist_ok=True) 
-            st.write('new_path: ', new_path)
+            new_folder = st.text_input('Name of new images folder')
+            if len(new_folder) == 0: 
+                new_path = os.path.join(selected_folder_path, 'new')
+                os.makedirs(new_path, exist_ok=True) 
+                st.write('Default new_path: ', new_path)
+            else: 
+                new_path = os.path.join(selected_folder_path, new_folder)
+                os.makedirs(new_path, exist_ok=True) 
+                st.write('new_path: ', new_path)
 
-        move_images_button = st.button("Move files", on_click=move_images, args=([json_path, good_path, selected_folder_path, new_path])) 
+            move_images_button = st.button("Move files", on_click=move_images, args=([json_path, good_path, selected_folder_path, new_path])) 
         
 
 
